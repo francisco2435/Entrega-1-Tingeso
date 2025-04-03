@@ -48,7 +48,7 @@ public class TarifaServicio {
     public void modificarTarifa(Long id, int nuevasVueltas, int nuevoTiempomax, double nuevoPrecio, int nuevaDuracion, String nuevoTipo){
         Tarifa tarifa = tarifaRepositorio.findById(id).get();
         if(tarifa == null){
-            System.out.println("El tarifa no existe");
+            System.out.println("La tarifa no existe");
             return;
         }
 
@@ -68,7 +68,7 @@ public class TarifaServicio {
         }
 
         if(nuevaDuracion < nuevoTiempomax){
-            System.out.println("La duracion total de la reserva debe ser mayor que el tiempo máximo permitido");
+            System.out.println("La duración total de la reserva debe ser mayor que el tiempo máximo permitido");
             return;
         }
 
@@ -77,7 +77,7 @@ public class TarifaServicio {
         tarifa.setPrecio(nuevoPrecio);
         tarifa.setDuracionReserva(nuevaDuracion);
         tarifa.setTipo(nuevoTipo);
-        
+
         tarifaRepositorio.save(tarifa);
         return;
     }

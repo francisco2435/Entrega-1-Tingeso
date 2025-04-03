@@ -17,7 +17,7 @@ public class Tarifa {
 
     public int numeroVueltas;
     public int tiempoMax;
-    public Double precio;
+    public double precio;
     public int duracionReserva;
     public String tipo; // Puede ser "normal", "especial", o "fin de semana"
 

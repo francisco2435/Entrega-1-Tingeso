@@ -14,8 +14,8 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //Id autoincremental
     private Long id;
+    public String rut;
     public String nombre;
-    @Getter
     public String correo;
     public String telefono;
     public String rol;
@@ -26,8 +26,9 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(String nombre, String correo, String telefono, String rol, String contrasenia, LocalDate fechaNacimiento) {
+    public Usuario(String nombre, String rut, String correo, String telefono, String rol, String contrasenia, LocalDate fechaNacimiento) {
         this.nombre = nombre;
+        this.rut = rut;
         this.correo = correo;
         this.telefono = telefono;
         this.rol = rol;

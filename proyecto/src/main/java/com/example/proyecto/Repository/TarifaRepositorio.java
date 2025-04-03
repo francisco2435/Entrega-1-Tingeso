@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface TarifaRepositorio extends JpaRepository<Tarifa, Long> {
-
+    Tarifa findByTipoAndTiempoMax(String tipo, int tiempomax);
+    Tarifa findByTipoAndNumeroVueltas(String tipo, int numeroVueltas);
 }

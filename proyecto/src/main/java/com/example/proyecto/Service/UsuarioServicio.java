@@ -14,10 +14,11 @@ public class UsuarioServicio {
     private UsuarioRepositorio usuarioRepositorio;
 
     //Nuevo Usuario
-    public Usuario registrarUsuario(String nombre, String correo, String telefono, String rol, String contrasenia, LocalDate fechaNacimiento) {
-        Usuario newUsuario = new Usuario(nombre, correo, telefono, rol, contrasenia, fechaNacimiento);
+    public Usuario registrarUsuario(String nombre,String rut, String correo, String telefono, String rol, String contrasenia, LocalDate fechaNacimiento) {
+        Usuario newUsuario = new Usuario(nombre, rut, correo, telefono, rol, contrasenia, fechaNacimiento);
         Usuario existente = usuarioRepositorio.findByCorreo(newUsuario.correo);
-        if(existente != null) {
+        Usuario existente2 = usuarioRepositorio.findByRut(newUsuario.rut);
+        if(existente != null || existente2 != null) {
             return null;
         }
         return usuarioRepositorio.save(newUsuario);

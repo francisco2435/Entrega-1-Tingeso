@@ -31,4 +31,3 @@ public class TarifaControlador {
         tarifaServicio.modificarTarifa(tarifa.id, tarifa.numeroVueltas, tarifa.tiempoMax, tarifa.precio, tarifa.duracionReserva, tarifa.tipo);
     }
 }
-

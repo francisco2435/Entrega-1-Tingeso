@@ -16,7 +16,7 @@ public class UsuarioControlador {
     //Crear nuevo usuario
     @PostMapping("/nuevousuario")
     public ResponseEntity<Usuario> registrarUsuario(@RequestBody Usuario usuario) {
-        return ResponseEntity.ok(usuarioServicio.registrarUsuario(usuario.nombre, usuario.correo, usuario.telefono, usuario.rol, usuario.contrasenia, usuario.fechaNacimiento));
+        return ResponseEntity.ok(usuarioServicio.registrarUsuario(usuario.nombre, usuario.rut, usuario.correo, usuario.telefono, usuario.rol, usuario.contrasenia, usuario.fechaNacimiento));
     }
 
     @PostMapping("/login")
