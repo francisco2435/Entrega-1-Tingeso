@@ -7,13 +7,26 @@ import com.example.proyecto.Repository.KartRepositorio;
 import com.example.proyecto.Repository.ReservaRepositorio;
 import com.example.proyecto.Repository.TarifaRepositorio;
 import com.example.proyecto.Repository.UsuarioRepositorio;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.util.ByteArrayDataSource;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +44,14 @@ public class ReservaServicio {
     @Autowired
     TarifaRepositorio tarifaRepositorio;
 
+    @Autowired
+    private JavaMailSender mailSender;  // Inject the mail sender
+
 
 
     // hacer Reserva
     public Reserva hacerReserva(String rutCliente, String nombreCliente, LocalDate fecha, LocalTime horaInicio, int tiempoMax,
-                                int numVueltas, int cantidadPersonas, List<String> rutsAmigos, List<String> nombres){
+                                int numVueltas, int cantidadPersonas, List<String> rutsAmigos, List<String> nombres) {
     // Variables
         int numKartsDisponibles = obtenerCantidadKartsDisponibles(fecha, horaInicio, horaInicio);
         Tarifa tarifa = obtenerTarifa(fecha,tiempoMax, numVueltas); // # Obtener tarifa correspondiente #
@@ -65,7 +81,8 @@ public class ReservaServicio {
 
     // Comprobar la disponibilidad de karts segun el numero de integrantes.
         if(numKartsDisponibles < cantidadPersonas){
-            System.out.println("No hay suficientes karts para la cantidad de personas ingresadas");
+
+            System.out.println("No hay suficientes karts para la cantidad de personas ingresadas " + numKartsDisponibles);
             return null;
         }
     // Comprobar (número del grupo) y (ids ingresados más el usuario) sean iguales
@@ -82,6 +99,7 @@ public class ReservaServicio {
 
     // # Comprobar horarios #
 
+
     // Comprobar que las fechas seleccionadas estén dentro del horario de trabajo
         if(!comprobarHorarioTrabajo(fecha, horaInicio, horaFin)){
             System.out.println("la reserva se está realizando fuera del horario de trabajo");
@@ -89,7 +107,7 @@ public class ReservaServicio {
         }
 
     // Comprobar tope de horario
-        if(!comprobarTopeHorario(fecha, horaInicio, horaFin)){
+        if(!comprobarTopeHorario(fecha, horaInicio, horaFin, cantidadPersonas+1)){
             System.out.println("la reserva tiene tope de horario con otra reserva ya realizada");
             return null;
         }
@@ -104,6 +122,7 @@ public class ReservaServicio {
             descuento = calcularDescuento(rut, cantidadPersonas, fecha, numDescuentosCumplAplicados);
             double parteEntera = Math.floor(descuento); //parte entera para identificar el tipo de descuento que se aplicó
             descuento = descuento - parteEntera; // descuento real a aplicar
+            descuento = Math.round(descuento * 100.0) / 100.0;
 
             Usuario usuarioEncontrado = usuarioRepositorio.findByRut(rut);
             if (usuarioEncontrado == null) {  // Verifica que el usuario esté registrado
@@ -113,14 +132,14 @@ public class ReservaServicio {
                     valorDescuentoTamanoGrupo.add(descuento);
                     nombreDescuentoEspeciales.add("No Aplica");
                     valorDescuentoEspeciales.add(0.0);
-                    montoTotal += tarifa.precio - tarifa.precio*descuento;
+                    montoTotal += Math.round((tarifa.precio - tarifa.precio * descuento) * 100.0) / 100.0;
 
                 } else{ //Si no hay descuento identificado, sumar la tarifa completa
                     nombreDescuentoTamanoGrupo.add("No Aplica");
                     valorDescuentoTamanoGrupo.add(0.0);
                     nombreDescuentoEspeciales.add("No Aplica");
                     valorDescuentoEspeciales.add(0.0);
-                    montoTotal += tarifa.precio;
+                    montoTotal += Math.round((tarifa.precio) * 100.0) / 100.0;
                 }
             } else{
                 //descuento por tamaño de grupo
@@ -129,14 +148,14 @@ public class ReservaServicio {
                     valorDescuentoTamanoGrupo.add(descuento);
                     nombreDescuentoEspeciales.add("No Aplica");
                     valorDescuentoEspeciales.add(0.0);
-                    montoTotal += tarifa.precio - tarifa.precio*descuento;
+                    montoTotal += Math.round((tarifa.precio - tarifa.precio * descuento) * 100.0) / 100.0;
 
                 }else if(parteEntera == 2.0){
                     nombreDescuentoTamanoGrupo.add("No Aplica");
                     valorDescuentoTamanoGrupo.add(0.0);
                     nombreDescuentoEspeciales.add("Cliente Frecuente");
                     valorDescuentoEspeciales.add(descuento);
-                    montoTotal += tarifa.precio - tarifa.precio*descuento;
+                    montoTotal += Math.round((tarifa.precio - tarifa.precio * descuento) * 100.0) / 100.0;
 
                 }else if(parteEntera == 3.0){
                     nombreDescuentoTamanoGrupo.add("No Aplica");
@@ -144,14 +163,14 @@ public class ReservaServicio {
                     nombreDescuentoEspeciales.add("Descuento de cumpleaños");
                     valorDescuentoEspeciales.add(descuento);
                     numDescuentosCumplAplicados ++;
-                    montoTotal += tarifa.precio - tarifa.precio*descuento;
+                    montoTotal += Math.round((tarifa.precio - tarifa.precio * descuento) * 100.0) / 100.0;
 
                 } else{ //Si no hay descuento identificado, sumar la tarifa completa
                     nombreDescuentoTamanoGrupo.add("No Aplica");
                     valorDescuentoTamanoGrupo.add(0.0);
                     nombreDescuentoEspeciales.add("No Aplica");
                     valorDescuentoEspeciales.add(0.0);
-                    montoTotal += tarifa.precio;
+                    montoTotal += Math.round((tarifa.precio) * 100.0) / 100.0;
                 }
             }
         }
@@ -159,13 +178,26 @@ public class ReservaServicio {
         rutsAmigos.remove(0);
         nombres.remove(0);
 
-        montoTotalConIva = montoTotal + montoTotal*valorIva;
+        // Luego de calcular el monto total
+
+
+        // Al final, redondear el monto total con IVA
+        montoTotalConIva = Math.round((montoTotal + montoTotal * valorIva) * 100.0) / 100.0;
 
         Reserva reserva = new Reserva(rutCliente, nombreCliente, horaInicio, horaFin,
         tarifa.duracionReserva, rutsAmigos, fecha, horaInicio, numVueltas,
         tiempoMax, cantidadPersonas, nombres, nombreDescuentoTamanoGrupo,
                 valorDescuentoTamanoGrupo, nombreDescuentoEspeciales,
                 valorDescuentoEspeciales, montoTotal, valorIva, montoTotalConIva);
+
+        Usuario usuario = usuarioRepositorio.findByRut(rutCliente);
+
+        if(usuario == null){
+            System.out.println("rut ingresado no está registrado");
+            return null;
+        }
+
+        enviarComprobanteReserva(reserva, usuario);
 
         return reservaRepositorio.save(reserva);
     }
@@ -247,7 +279,7 @@ public class ReservaServicio {
     }
 
     // Comprobar tope de horario
-    public boolean comprobarTopeHorario(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin){
+    public boolean comprobarTopeHorario(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int numIntegrantes){
         List<Reserva> reservas = reservaRepositorio.findByFechaReserva(fecha);;
 
         // Recorrer cada reserva y verificar si hay cruce de horarios
@@ -257,7 +289,12 @@ public class ReservaServicio {
 
             // Comprobar si los horarios ingresados se solapan con la reserva
             if (!(horaFin.isBefore(inicioReserva) || horaInicio.isAfter(finReserva))) {
-                return false; //Hay tope de horario
+                System.out.println(numIntegrantes + "a" + obtenerCantidadKartsDisponibles(fecha, horaInicio, horaFin));
+                if(numIntegrantes <= obtenerCantidadKartsDisponibles(fecha, horaInicio, horaFin)){
+                    return true;//se cruzan los horarios pero hay disponibilidad de karts
+                } else{
+                    return false;
+                }
             }
         }
         return true; // No hay tope de horario
@@ -389,4 +426,105 @@ public class ReservaServicio {
     //                                double montoTotal, double valorIva, double montoTotalConIva){
 
     //}
+
+    public PDDocument generarComprobanteReserva(Reserva reserva) throws IOException {
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        document.addPage(page);
+        PDType1Font font = new PDType1Font(Standard14Fonts.FontName.TIMES_ROMAN);
+
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+        // Establecer la fuente antes de mostrar el texto
+        contentStream.setFont(font, 12);
+
+        // Título
+        contentStream.beginText();
+        contentStream.newLineAtOffset(50, 750);
+        contentStream.showText("Comprobante de Reserva");
+        contentStream.endText();
+
+        // Información de la reserva
+        contentStream.beginText();
+        contentStream.newLineAtOffset(50, 720);
+        contentStream.showText("ID: " + reserva.id);
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Nombre reservante: " + reserva.nombreCliente);
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Fecha de reserva: " + reserva.fechaReserva.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Hora de reserva: " + reserva.horaReserva);
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Número de vueltas: " + reserva.numVueltas);
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Tiempo máximo: " + reserva.tiempoMax + " minutos");
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Cantidad de personas: " + reserva.cantidadPersonas);
+
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Nombres: " + String.join(", ", reserva.nombres));
+
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Descuento por tamaño de grupo: ");
+        for (int i = 0; i < reserva.nombreDescuentoTamanoGrupo.size(); i++) {
+            contentStream.newLineAtOffset(0, -15);
+            contentStream.showText(reserva.nombreDescuentoTamanoGrupo.get(i) + ": " + reserva.valorDescuentoTamanoGrupo.get(i));
+        }
+
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Descuento especial: ");
+        for (int i = 0; i < reserva.nombreDescuentoEspeciales.size(); i++) {
+            contentStream.newLineAtOffset(0, -15);
+            contentStream.showText(reserva.nombreDescuentoEspeciales.get(i) + ": " + reserva.valorDescuentoEspeciales.get(i));
+        }
+
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Monto total: " + reserva.montoTotal);
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("IVA (19%): " + reserva.valorIva);
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Monto total con IVA: " + reserva.montoTotalConIva);
+
+        contentStream.endText();
+        contentStream.close();
+
+        return document;
+    }
+
+    public void enviarPdfPorCorreo(String correo, PDDocument pdfDocument) throws MessagingException, IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        pdfDocument.save(outputStream);
+        byte[] pdfBytes = outputStream.toByteArray();
+
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+
+        helper.setFrom("franciscoriquelmenunez@gmail.com");
+        helper.setTo(correo);
+        helper.setSubject("Comprobante de Reserva");
+        helper.setText("Adjunto encontrará el comprobante de su reserva.");
+
+        // Adjuntar el PDF
+        helper.addAttachment("comprobante_reserva.pdf", new ByteArrayDataSource(pdfBytes, "application/pdf"));
+
+        mailSender.send(mimeMessage);
+    }
+
+    public void enviarComprobanteReserva(Reserva reserva, Usuario usuario) {
+        try {
+            // Generar el comprobante PDF
+            PDDocument comprobante = generarComprobanteReserva(reserva);
+
+            // Enviar el PDF por correo electrónico
+            enviarPdfPorCorreo(usuario.correo, comprobante);
+
+        } catch (MessagingException e) {
+            // Manejar excepciones al enviar el correo
+            System.err.println("Error al enviar el correo: " + e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            // Manejar excepciones al generar o escribir el PDF
+            System.err.println("Error al generar el archivo PDF: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

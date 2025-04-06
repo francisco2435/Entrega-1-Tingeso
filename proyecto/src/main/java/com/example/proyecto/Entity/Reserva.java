@@ -2,7 +2,9 @@ package com.example.proyecto.Entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Reserva {
 
     //Atributos para hacer reserva
@@ -42,11 +46,6 @@ public class Reserva {
     public double valorIva;
     public double montoTotalConIva;
 
-
-
-
-    public Reserva() {
-    }
 
     public Reserva(String rutCliente, String nombreCliente, LocalTime horaInicio, LocalTime horaFin,
                    int tiempoTotal, List<String> rutsAmigos, LocalDate fechaReserva, LocalTime horaReserva, int numVueltas,
