@@ -81,4 +81,8 @@ public class TarifaServicio {
         tarifaRepositorio.save(tarifa);
         return;
     }
+
+    public Tarifa obtenerTarifa(Long id){
+        return tarifaRepositorio.findById(id).get();
+    }
 }

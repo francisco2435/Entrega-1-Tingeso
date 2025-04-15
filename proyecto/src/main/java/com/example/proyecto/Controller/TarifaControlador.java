@@ -30,4 +30,9 @@ public class TarifaControlador {
     public void modificarTarifa(@RequestBody Tarifa tarifa) {
         tarifaServicio.modificarTarifa(tarifa.id, tarifa.numeroVueltas, tarifa.tiempoMax, tarifa.precio, tarifa.duracionReserva, tarifa.tipo);
     }
+
+    @GetMapping("/obtenerTarifa")
+    public ResponseEntity<Tarifa> obtenerTarifa(@RequestParam Long id) {
+        return ResponseEntity.ok(tarifaServicio.obtenerTarifa(id));
+    }
 }

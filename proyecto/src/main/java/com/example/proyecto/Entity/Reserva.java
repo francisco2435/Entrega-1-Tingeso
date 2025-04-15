@@ -13,7 +13,6 @@ import java.util.List;
 
 @Entity
 @Getter @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 public class Reserva {
 
@@ -31,6 +30,7 @@ public class Reserva {
     public Long id;
 
     public LocalDate fechaReserva;
+    public String TipoTarifa;
     public LocalTime horaReserva;
     public int numVueltas;
     public int tiempoMax; // en minutos
@@ -46,12 +46,14 @@ public class Reserva {
     public double valorIva;
     public double montoTotalConIva;
 
+    public Reserva() {
+    }
 
     public Reserva(String rutCliente, String nombreCliente, LocalTime horaInicio, LocalTime horaFin,
                    int tiempoTotal, List<String> rutsAmigos, LocalDate fechaReserva, LocalTime horaReserva, int numVueltas,
                    int tiempoMax, int cantidadPersonas, List<String> nombres, List<String> nombreDescuentoTamanoGrupo,
                    List<Double> valorDescuentoTamanoGrupo, List<String> nombreDescuentoEspeciales,
-                   List<Double> valorDescuentoEspeciales, double montoTotal, double valorIva, double montoTotalConIva) {
+                   List<Double> valorDescuentoEspeciales, double montoTotal, double valorIva, double montoTotalConIva, String TipoTarifa) {
         this.rutCliente = rutCliente;
         this.nombreCliente = nombreCliente;
         this.horaInicio = horaInicio;
@@ -71,6 +73,7 @@ public class Reserva {
         this.montoTotal = montoTotal;
         this.valorIva = valorIva;
         this.montoTotalConIva = montoTotalConIva;
+        this.TipoTarifa = TipoTarifa;
     }
 
 }

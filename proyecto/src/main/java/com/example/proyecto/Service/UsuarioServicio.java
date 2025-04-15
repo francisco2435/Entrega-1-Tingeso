@@ -14,14 +14,13 @@ public class UsuarioServicio {
     private UsuarioRepositorio usuarioRepositorio;
 
     //Nuevo Usuario
-    public Usuario registrarUsuario(String nombre,String rut, String correo, String telefono, String rol, String contrasenia, LocalDate fechaNacimiento) {
-        Usuario newUsuario = new Usuario(nombre, rut, correo, telefono, rol, contrasenia, fechaNacimiento);
-        Usuario existente = usuarioRepositorio.findByCorreo(newUsuario.correo);
-        Usuario existente2 = usuarioRepositorio.findByRut(newUsuario.rut);
-        if(existente != null || existente2 != null) {
-            return null;
+    public Usuario registrarUsuario(String nombre, String rut, String correo, String telefono, String rol, String contrasenia, LocalDate fechaNacimiento) {
+        if (usuarioRepositorio.findByCorreo(correo) != null || usuarioRepositorio.findByRut(rut) != null) {
+            throw new IllegalArgumentException("Ya existe un usuario con ese correo o RUT.");
         }
-        return usuarioRepositorio.save(newUsuario);
+
+        Usuario nuevoUsuario = new Usuario(nombre, rut, correo, telefono, rol, contrasenia, fechaNacimiento);
+        return usuarioRepositorio.save(nuevoUsuario);
     }
 
     // Login usuario
@@ -29,13 +28,11 @@ public class UsuarioServicio {
         Usuario usuario = usuarioRepositorio.findByCorreo(correo);
         //Comprobar que el usuario esté registrado con el correo ingresado
         if(usuario == null) {
-            System.out.println("Usuario no encontrado");
-            return null;
+            throw new IllegalArgumentException("Usuario no encontrado");
         }
         //Comprobar que la contraseña ingresada sea correcta
         if(!usuario.contrasenia.equals(contrasenia)) {
-            System.out.println("Contraseñas no coinciden");
-            return null;
+            throw new IllegalArgumentException("Contraseñas no coinciden");
         }
         //Retornar el usuario logueado
         return usuario;

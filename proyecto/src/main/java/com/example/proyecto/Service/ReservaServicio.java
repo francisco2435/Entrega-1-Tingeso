@@ -33,20 +33,19 @@ import java.util.List;
 @Service
 public class ReservaServicio {
     @Autowired
-    ReservaRepositorio reservaRepositorio;
+    private ReservaRepositorio reservaRepositorio;
 
     @Autowired
-    UsuarioRepositorio usuarioRepositorio;
+    private UsuarioRepositorio usuarioRepositorio;
 
     @Autowired
-    KartRepositorio kartRepositorio;
+    private KartRepositorio kartRepositorio;
 
     @Autowired
-    TarifaRepositorio tarifaRepositorio;
+    private TarifaRepositorio tarifaRepositorio;
 
     @Autowired
-    private JavaMailSender mailSender;  // Inject the mail sender
-
+    private JavaMailSender mailSender;
 
 
     // hacer Reserva
@@ -178,7 +177,7 @@ public class ReservaServicio {
         rutsAmigos.remove(0);
         nombres.remove(0);
 
-        // Luego de calcular el monto total
+        String tipoTarifa = tarifa.tipo;
 
 
         // Al final, redondear el monto total con IVA
@@ -188,7 +187,7 @@ public class ReservaServicio {
         tarifa.duracionReserva, rutsAmigos, fecha, horaInicio, numVueltas,
         tiempoMax, cantidadPersonas, nombres, nombreDescuentoTamanoGrupo,
                 valorDescuentoTamanoGrupo, nombreDescuentoEspeciales,
-                valorDescuentoEspeciales, montoTotal, valorIva, montoTotalConIva);
+                valorDescuentoEspeciales, montoTotal, valorIva, montoTotalConIva,tipoTarifa);
 
         Usuario usuario = usuarioRepositorio.findByRut(rutCliente);
 
@@ -459,6 +458,9 @@ public class ReservaServicio {
         contentStream.showText("Tiempo máximo: " + reserva.tiempoMax + " minutos");
         contentStream.newLineAtOffset(0, -15);
         contentStream.showText("Cantidad de personas: " + reserva.cantidadPersonas);
+
+        contentStream.newLineAtOffset(0, -15);
+        contentStream.showText("Tipo de Tarifa: " + reserva.TipoTarifa);
 
         contentStream.newLineAtOffset(0, -15);
         contentStream.showText("Nombres: " + String.join(", ", reserva.nombres));
