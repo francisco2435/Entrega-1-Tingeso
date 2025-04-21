@@ -7,7 +7,6 @@ import com.example.proyecto.Repository.ReservaRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -40,8 +39,7 @@ public class ReporteServicio {
         List<Double> personas11a15;
 
         if(meses == null){
-            System.out.println("La fecha fin debe ser mayor que la fecha inicio");
-            return null;
+            throw new IllegalArgumentException("La fecha fin debe ser mayor que la fecha inicio");
         }
 
         filas.add(tipo);
@@ -79,17 +77,7 @@ public class ReporteServicio {
             total = personas1a2.get(i) + personas3a5.get(i) + personas6a10.get(i) + personas11a15.get(i);
             totales.add(total);
         }
-        System.out.println(tipo);
-        System.out.println(fechaCreacion);
-        System.out.println(fechaInicio);
-        System.out.println(fechaFin);
-        System.out.println(meses);
-        System.out.println(filas);
-        System.out.println(personas1a2);
-        System.out.println(personas3a5);
-        System.out.println(personas6a10);
-        System.out.println(personas11a15);
-        System.out.println(totales);
+
         Reporte reporte = new Reporte(tipo, fechaCreacion, fechaInicio, fechaFin, meses, filas, personas1a2, personas3a5, personas6a10, personas11a15, totales);
         return reporteRepositorio.save(reporte);
    }
@@ -142,12 +130,12 @@ public class ReporteServicio {
         List<Reserva> reservas = reservaRepositorio.findByFechaReservaBetween(fechaInicio, fechaFin);
 
         for (Reserva reserva : reservas) {
-            if (reserva.numVueltas == num || reserva.tiempoMax == num) {
-                LocalDate fechaReserva = reserva.fechaReserva;
+            if (reserva.getNumVueltas() == num || reserva.getTiempoMax() == num) {
+                LocalDate fechaReserva = reserva.getFechaReserva();
                 YearMonth mesReserva = YearMonth.from(fechaReserva);
                 int index = meses.indexOf(mesReserva);
                 if (index != -1) {
-                    double monto = reserva.montoTotalConIva;
+                    double monto = reserva.getMontoTotalConIva();
                     totales.set(index, totales.get(index) + monto);
                 }
             }
@@ -186,12 +174,12 @@ public class ReporteServicio {
         List<Reserva> reservas = reservaRepositorio.findByFechaReservaBetween(fechaInicio, fechaFin);
 
         for (Reserva reserva : reservas) {
-            if (reserva.cantidadPersonas >= num1 && reserva.cantidadPersonas <= num2) {
-                LocalDate fechaReserva = reserva.fechaReserva;
+            if (reserva.getCantidadPersonas() >= num1 && reserva.getCantidadPersonas() <= num2) {
+                LocalDate fechaReserva = reserva.getFechaReserva();
                 YearMonth mesReserva = YearMonth.from(fechaReserva);
                 int index = meses.indexOf(mesReserva);
                 if (index != -1) {
-                    double monto = reserva.montoTotalConIva;
+                    double monto = reserva.getMontoTotalConIva();
                     totales.set(index, totales.get(index) + monto);
                 }
             }

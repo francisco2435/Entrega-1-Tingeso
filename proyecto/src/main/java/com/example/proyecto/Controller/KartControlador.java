@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("*")
 @RequestMapping("/kart")
 public class KartControlador {
     @Autowired
@@ -18,7 +18,7 @@ public class KartControlador {
     //Crear nuevo kart
     @PostMapping("/nuevoKart")
     public ResponseEntity<Kart> nuevoKart(@RequestBody Kart kart) {
-        return ResponseEntity.ok(kartServicio.nuevoKart(kart.codigo, kart.modelo, kart.estado));
+        return ResponseEntity.ok(kartServicio.nuevoKart(kart.getCodigo(), kart.getModelo(), kart.getEstado()));
     }
 
     // Obtener karts a partir de su estado (disponible, mantenimiento y ocupado)

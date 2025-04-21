@@ -17,34 +17,34 @@ import java.util.List;
 public class Reserva {
 
     //Atributos para hacer reserva
-    public String rutCliente;
-    public String nombreCliente;
-    public LocalTime horaInicio;
-    public LocalTime horaFin;
-    public int tiempoTotal; // en minutos
-    public List<String> rutsAmigos;
+    private String rutCliente;
+    private String nombreCliente;
+    private LocalTime horaInicio;
+    private LocalTime horaFin;
+    private int tiempoTotal; // en minutos
+    private List<String> rutsAmigos;
 
     // Atributos para hacer comprobante
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //Id autoincremental
-    public Long id;
+    private Long id;
 
-    public LocalDate fechaReserva;
-    public String TipoTarifa;
-    public LocalTime horaReserva;
-    public int numVueltas;
-    public int tiempoMax; // en minutos
-    public int cantidadPersonas;
-    // nombre de quien hizo la reserva
-    public List<String> nombres;
+    private LocalDate fechaReserva;
+    private String TipoTarifa;
+    private LocalTime horaReserva;
+    private int numVueltas;
+    private int tiempoMax; // en minutos
+    private int cantidadPersonas;
+
+    private List<String> nombres;
     // tarifa aplicada es igual para todos
-    public List<String> nombreDescuentoTamanoGrupo;
-    public List<Double> valorDescuentoTamanoGrupo;
-    public List<String> nombreDescuentoEspeciales; //por ser cliente frecuente o promociones especiales
-    public List<Double> valorDescuentoEspeciales;
-    public double montoTotal;
-    public double valorIva;
-    public double montoTotalConIva;
+    private List<String> nombreDescuentoTamanoGrupo;
+    private List<Double> valorDescuentoTamanoGrupo;
+    private List<String> nombreDescuentoEspeciales; //por ser cliente frecuente o promociones especiales
+    private List<Double> valorDescuentoEspeciales;
+    private double montoTotal;
+    private double valorIva;
+    private double montoTotalConIva;
 
     public Reserva() {
     }
@@ -76,4 +76,87 @@ public class Reserva {
         this.TipoTarifa = TipoTarifa;
     }
 
+    public String getRutCliente() {
+        return rutCliente;
+    }
+
+    public String getNombreCliente() {
+        return nombreCliente;
+    }
+
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
+
+    public int getTiempoTotal() {
+        return tiempoTotal;
+    }
+
+    public LocalTime getHoraFin() {
+        return horaFin;
+    }
+
+    public List<String> getRutsAmigos() {
+        return rutsAmigos;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public LocalDate getFechaReserva() {
+        return fechaReserva;
+    }
+
+    public String getTipoTarifa() {
+        return TipoTarifa;
+    }
+
+    public LocalTime getHoraReserva() {
+        return horaReserva;
+    }
+
+    public int getTiempoMax() {
+        return tiempoMax;
+    }
+
+    public int getNumVueltas() {
+        return numVueltas;
+    }
+
+    public int getCantidadPersonas() {
+        return cantidadPersonas;
+    }
+
+    public List<String> getNombres() {
+        return nombres;
+    }
+
+    public List<String> getNombreDescuentoTamanoGrupo() {
+        return nombreDescuentoTamanoGrupo;
+    }
+
+    public List<Double> getValorDescuentoTamanoGrupo() {
+        return valorDescuentoTamanoGrupo;
+    }
+
+    public List<String> getNombreDescuentoEspeciales() {
+        return nombreDescuentoEspeciales;
+    }
+
+    public List<Double> getValorDescuentoEspeciales() {
+        return valorDescuentoEspeciales;
+    }
+
+    public double getMontoTotal() {
+        return montoTotal;
+    }
+
+    public double getValorIva() {
+        return valorIva;
+    }
+
+    public double getMontoTotalConIva() {
+        return montoTotalConIva;
+    }
 }

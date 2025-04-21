@@ -1,13 +1,11 @@
 import axios from "axios";
 
-const proyectoBackendServer = import.meta.env.VITE_PROYECTO_BACKEND_SERVER;
-const proyectoBackendPort = import.meta.env.VITE_PROYECTO_BACKEND_PORT;
+const proyectoBackendServer = "localhost:80";
 
 console.log(proyectoBackendServer)
-console.log(proyectoBackendPort)
 
 export default axios.create({
-    baseURL: `http://${proyectoBackendServer}:${proyectoBackendPort}`,
+    baseURL: `http://${proyectoBackendServer}`,
     headers: {
         'Content-Type': 'application/json'
     }

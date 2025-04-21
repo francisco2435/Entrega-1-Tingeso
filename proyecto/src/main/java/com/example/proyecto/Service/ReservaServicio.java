@@ -54,7 +54,7 @@ public class ReservaServicio {
     // Variables
         int numKartsDisponibles = obtenerCantidadKartsDisponibles(fecha, horaInicio, horaInicio);
         Tarifa tarifa = obtenerTarifa(fecha,tiempoMax, numVueltas); // # Obtener tarifa correspondiente #
-        LocalTime horaFin = horaInicio.plusMinutes(tarifa.duracionReserva); //hora inicio mas la duracion total de la reserva
+        LocalTime horaFin = horaInicio.plusMinutes(tarifa.getDuracionReserva()); //hora inicio mas la duracion total de la reserva
         double descuento;
         int numDescuentosCumplAplicados = 0;
         List<String> nombreDescuentoTamanoGrupo = new ArrayList<>();
@@ -74,25 +74,21 @@ public class ReservaServicio {
 
     // Comprobar que la cantidad de ruts ingresados sea igual al de los nombres ingresados
         if(rutsAmigos.size() != nombres.size()){
-            System.out.println("La cantidad de ruts ingresados no es igual al de los nombres ingresados");
-            return null;
+            throw new IllegalArgumentException("La cantidad de ruts ingresados no es igual al de los nombres ingresados");
         }
 
     // Comprobar la disponibilidad de karts segun el numero de integrantes.
         if(numKartsDisponibles < cantidadPersonas){
 
-            System.out.println("No hay suficientes karts para la cantidad de personas ingresadas " + numKartsDisponibles);
-            return null;
+            throw new IllegalArgumentException("No hay suficientes karts para la cantidad de personas ingresadas " + numKartsDisponibles);
         }
     // Comprobar (número del grupo) y (ids ingresados más el usuario) sean iguales
         if(rutsAmigos.size() != cantidadPersonas){
-            System.out.println("El numero de ruts ingresados no coinciden con el numero de personas ingresadas");
-            return null;
+            throw new IllegalArgumentException("El numero de ruts ingresados no coinciden con el numero de personas ingresadas");
         }
     // Comprobar que el total de integrantes sea menor o igual a 15
         if(cantidadPersonas > 15){
-            System.out.println("El numero de personas ingresadas es mayor que 15");
-            return null;
+            throw new IllegalArgumentException("El numero de personas ingresadas es mayor que 15");
         }
 
 
@@ -101,14 +97,12 @@ public class ReservaServicio {
 
     // Comprobar que las fechas seleccionadas estén dentro del horario de trabajo
         if(!comprobarHorarioTrabajo(fecha, horaInicio, horaFin)){
-            System.out.println("la reserva se está realizando fuera del horario de trabajo");
-            return null;
+            throw new IllegalArgumentException("la reserva se está realizando fuera del horario de trabajo");
         }
 
     // Comprobar tope de horario
         if(!comprobarTopeHorario(fecha, horaInicio, horaFin, cantidadPersonas+1)){
-            System.out.println("la reserva tiene tope de horario con otra reserva ya realizada");
-            return null;
+            throw new IllegalArgumentException("la reserva tiene tope de horario con otra reserva ya realizada");
         }
 
     // # Aplicar descuentos y calculo del monto total#
@@ -131,14 +125,14 @@ public class ReservaServicio {
                     valorDescuentoTamanoGrupo.add(descuento);
                     nombreDescuentoEspeciales.add("No Aplica");
                     valorDescuentoEspeciales.add(0.0);
-                    montoTotal += Math.round((tarifa.precio - tarifa.precio * descuento) * 100.0) / 100.0;
+                    montoTotal += Math.round((tarifa.getPrecio() - tarifa.getPrecio() * descuento) * 100.0) / 100.0;
 
                 } else{ //Si no hay descuento identificado, sumar la tarifa completa
                     nombreDescuentoTamanoGrupo.add("No Aplica");
                     valorDescuentoTamanoGrupo.add(0.0);
                     nombreDescuentoEspeciales.add("No Aplica");
                     valorDescuentoEspeciales.add(0.0);
-                    montoTotal += Math.round((tarifa.precio) * 100.0) / 100.0;
+                    montoTotal += Math.round((tarifa.getPrecio()) * 100.0) / 100.0;
                 }
             } else{
                 //descuento por tamaño de grupo
@@ -147,14 +141,14 @@ public class ReservaServicio {
                     valorDescuentoTamanoGrupo.add(descuento);
                     nombreDescuentoEspeciales.add("No Aplica");
                     valorDescuentoEspeciales.add(0.0);
-                    montoTotal += Math.round((tarifa.precio - tarifa.precio * descuento) * 100.0) / 100.0;
+                    montoTotal += Math.round((tarifa.getPrecio() - tarifa.getPrecio() * descuento) * 100.0) / 100.0;
 
                 }else if(parteEntera == 2.0){
                     nombreDescuentoTamanoGrupo.add("No Aplica");
                     valorDescuentoTamanoGrupo.add(0.0);
                     nombreDescuentoEspeciales.add("Cliente Frecuente");
                     valorDescuentoEspeciales.add(descuento);
-                    montoTotal += Math.round((tarifa.precio - tarifa.precio * descuento) * 100.0) / 100.0;
+                    montoTotal += Math.round((tarifa.getPrecio() - tarifa.getPrecio() * descuento) * 100.0) / 100.0;
 
                 }else if(parteEntera == 3.0){
                     nombreDescuentoTamanoGrupo.add("No Aplica");
@@ -162,14 +156,14 @@ public class ReservaServicio {
                     nombreDescuentoEspeciales.add("Descuento de cumpleaños");
                     valorDescuentoEspeciales.add(descuento);
                     numDescuentosCumplAplicados ++;
-                    montoTotal += Math.round((tarifa.precio - tarifa.precio * descuento) * 100.0) / 100.0;
+                    montoTotal += Math.round((tarifa.getPrecio() - tarifa.getPrecio() * descuento) * 100.0) / 100.0;
 
                 } else{ //Si no hay descuento identificado, sumar la tarifa completa
                     nombreDescuentoTamanoGrupo.add("No Aplica");
                     valorDescuentoTamanoGrupo.add(0.0);
                     nombreDescuentoEspeciales.add("No Aplica");
                     valorDescuentoEspeciales.add(0.0);
-                    montoTotal += Math.round((tarifa.precio) * 100.0) / 100.0;
+                    montoTotal += Math.round((tarifa.getPrecio()) * 100.0) / 100.0;
                 }
             }
         }
@@ -177,14 +171,14 @@ public class ReservaServicio {
         rutsAmigos.remove(0);
         nombres.remove(0);
 
-        String tipoTarifa = tarifa.tipo;
+        String tipoTarifa = tarifa.getTipo();
 
 
         // Al final, redondear el monto total con IVA
         montoTotalConIva = Math.round((montoTotal + montoTotal * valorIva) * 100.0) / 100.0;
 
         Reserva reserva = new Reserva(rutCliente, nombreCliente, horaInicio, horaFin,
-        tarifa.duracionReserva, rutsAmigos, fecha, horaInicio, numVueltas,
+        tarifa.getDuracionReserva(), rutsAmigos, fecha, horaInicio, numVueltas,
         tiempoMax, cantidadPersonas, nombres, nombreDescuentoTamanoGrupo,
                 valorDescuentoTamanoGrupo, nombreDescuentoEspeciales,
                 valorDescuentoEspeciales, montoTotal, valorIva, montoTotalConIva,tipoTarifa);
@@ -192,8 +186,7 @@ public class ReservaServicio {
         Usuario usuario = usuarioRepositorio.findByRut(rutCliente);
 
         if(usuario == null){
-            System.out.println("rut ingresado no está registrado");
-            return null;
+            throw new IllegalArgumentException("rut ingresado no está registrado");
         }
 
         enviarComprobanteReserva(reserva, usuario);
@@ -262,15 +255,15 @@ public class ReservaServicio {
         List<Reserva> reservasDelMes = reservaRepositorio.findByFechaReservaBetween(inicioMes, finMes);
 
         for (Reserva reserva : reservasDelMes) {
-            if (reserva.rutsAmigos != null) { // Evitar agregar valores null
-                if(reserva.rutsAmigos.contains(rutIntegrante)){ //revisar si el rut se encuentra en lista de ruts
+            if (reserva.getRutsAmigos() != null) { // Evitar agregar valores null
+                if(reserva.getRutsAmigos().contains(rutIntegrante)){ //revisar si el rut se encuentra en lista de ruts
                     frecuenciaReservasRealizadas++;
                 }
             }
         }
 
         for (Reserva reserva : reservasDelMes) {
-            if (reserva.rutCliente.equals(rutIntegrante)) { //revisar si el rut ha hecho alguna otra reserva
+            if (reserva.getRutCliente().equals(rutIntegrante)) { //revisar si el rut ha hecho alguna otra reserva
                 frecuenciaReservasRealizadas++;
             }
         }
@@ -283,17 +276,12 @@ public class ReservaServicio {
 
         // Recorrer cada reserva y verificar si hay cruce de horarios
         for (Reserva reserva : reservas) {
-            LocalTime inicioReserva = reserva.horaInicio;
-            LocalTime finReserva = reserva.horaFin;
+            LocalTime inicioReserva = reserva.getHoraInicio();
+            LocalTime finReserva = reserva.getHoraFin();
 
             // Comprobar si los horarios ingresados se solapan con la reserva
             if (!(horaFin.isBefore(inicioReserva) || horaInicio.isAfter(finReserva))) {
-                System.out.println(numIntegrantes + "a" + obtenerCantidadKartsDisponibles(fecha, horaInicio, horaFin));
-                if(numIntegrantes <= obtenerCantidadKartsDisponibles(fecha, horaInicio, horaFin)){
-                    return true;//se cruzan los horarios pero hay disponibilidad de karts
-                } else{
-                    return false;
-                }
+                return false;
             }
         }
         return true; // No hay tope de horario
@@ -327,12 +315,12 @@ public class ReservaServicio {
 
         // Recorrer cada reserva y verificar si hay cruce de horarios
         for (Reserva reserva : reservas) {
-            LocalTime inicioReserva = reserva.horaInicio;
-            LocalTime finReserva = reserva.horaFin;
+            LocalTime inicioReserva = reserva.getHoraInicio();
+            LocalTime finReserva = reserva.getHoraFin();
 
             // Comprobar si los horarios ingresados se solapan con la reserva
             if (!(horaFin.isBefore(inicioReserva) || horaInicio.isAfter(finReserva))) {
-                kartsOcupados += reserva.cantidadPersonas;
+                kartsOcupados += reserva.getCantidadPersonas();
             }
         }
 
@@ -355,8 +343,7 @@ public class ReservaServicio {
         int tipoDeDia = diasEspeciales(fecha);
 
         if (numVueltas == 0 && tiempoMax == 0) {
-            System.out.println("Debe especificar numVueltas o tiempoMax.");
-            return null;
+            throw new IllegalArgumentException("Debe especificar numVueltas o tiempoMax.");
         }
         if(numVueltas != 0){
             if (tipoDeDia == 0) {
@@ -445,46 +432,46 @@ public class ReservaServicio {
         // Información de la reserva
         contentStream.beginText();
         contentStream.newLineAtOffset(50, 720);
-        contentStream.showText("ID: " + reserva.id);
+        contentStream.showText("ID: " + reserva.getId());
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Nombre reservante: " + reserva.nombreCliente);
+        contentStream.showText("Nombre reservante: " + reserva.getNombreCliente());
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Fecha de reserva: " + reserva.fechaReserva.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        contentStream.showText("Fecha de reserva: " + reserva.getFechaReserva().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Hora de reserva: " + reserva.horaReserva);
+        contentStream.showText("Hora de reserva: " + reserva.getHoraReserva());
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Número de vueltas: " + reserva.numVueltas);
+        contentStream.showText("Número de vueltas: " + reserva.getNumVueltas());
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Tiempo máximo: " + reserva.tiempoMax + " minutos");
+        contentStream.showText("Tiempo máximo: " + reserva.getTiempoMax() + " minutos");
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Cantidad de personas: " + reserva.cantidadPersonas);
+        contentStream.showText("Cantidad de personas: " + reserva.getCantidadPersonas());
 
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Tipo de Tarifa: " + reserva.TipoTarifa);
+        contentStream.showText("Tipo de Tarifa: " + reserva.getTipoTarifa());
 
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Nombres: " + String.join(", ", reserva.nombres));
+        contentStream.showText("Nombres: " + String.join(", ", reserva.getNombres()));
 
         contentStream.newLineAtOffset(0, -15);
         contentStream.showText("Descuento por tamaño de grupo: ");
-        for (int i = 0; i < reserva.nombreDescuentoTamanoGrupo.size(); i++) {
+        for (int i = 0; i < reserva.getNombreDescuentoTamanoGrupo().size(); i++) {
             contentStream.newLineAtOffset(0, -15);
-            contentStream.showText(reserva.nombreDescuentoTamanoGrupo.get(i) + ": " + reserva.valorDescuentoTamanoGrupo.get(i));
+            contentStream.showText(reserva.getNombreDescuentoTamanoGrupo().get(i) + ": " + reserva.getValorDescuentoTamanoGrupo().get(i));
         }
 
         contentStream.newLineAtOffset(0, -15);
         contentStream.showText("Descuento especial: ");
-        for (int i = 0; i < reserva.nombreDescuentoEspeciales.size(); i++) {
+        for (int i = 0; i < reserva.getNombreDescuentoEspeciales().size(); i++) {
             contentStream.newLineAtOffset(0, -15);
-            contentStream.showText(reserva.nombreDescuentoEspeciales.get(i) + ": " + reserva.valorDescuentoEspeciales.get(i));
+            contentStream.showText(reserva.getNombreDescuentoEspeciales().get(i) + ": " + reserva.getValorDescuentoEspeciales().get(i));
         }
 
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Monto total: " + reserva.montoTotal);
+        contentStream.showText("Monto total: " + reserva.getMontoTotal());
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("IVA (19%): " + reserva.valorIva);
+        contentStream.showText("IVA (19%): " + reserva.getValorIva());
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Monto total con IVA: " + reserva.montoTotalConIva);
+        contentStream.showText("Monto total con IVA: " + reserva.getMontoTotal());
 
         contentStream.endText();
         contentStream.close();

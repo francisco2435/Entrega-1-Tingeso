@@ -16,23 +16,19 @@ public class TarifaServicio {
     public Tarifa NuevaTarifa(int numeroVueltas, int tiempoMax, Double precio, int duracionReserva, String tipo){
 
         if(!(Objects.equals(tipo, "normal") || Objects.equals(tipo, "dia especial") || Objects.equals(tipo, "fin de semana"))){
-            System.out.println("la tarifa debe ser de tipo normal, dia especial o fin de semana");
-            return null;
+            throw new IllegalArgumentException("la tarifa debe ser de tipo normal, dia especial o fin de semana");
         }
 
         if(tiempoMax < 0){
-            System.out.println(" El tiempo maximo permitido debe ser positivo");
-            return null;
+            throw new IllegalArgumentException(" El tiempo maximo permitido debe ser positivo");
         }
 
         if(precio < 0){
-            System.out.println(" El precio debe ser positivo");
-            return null;
+            throw new IllegalArgumentException(" El precio debe ser positivo");
         }
 
         if(duracionReserva < tiempoMax){
-            System.out.println("La duracion total de la reserva debe ser mayor que el tiempo máximo permitido");
-            return null;
+            throw new IllegalArgumentException("La duracion total de la reserva debe ser mayor que el tiempo máximo permitido");
         }
 
         Tarifa tarifa = new Tarifa(numeroVueltas, tiempoMax, precio, duracionReserva, tipo);
@@ -48,28 +44,23 @@ public class TarifaServicio {
     public void modificarTarifa(Long id, int nuevasVueltas, int nuevoTiempomax, double nuevoPrecio, int nuevaDuracion, String nuevoTipo){
         Tarifa tarifa = tarifaRepositorio.findById(id).get();
         if(tarifa == null){
-            System.out.println("La tarifa no existe");
-            return;
+            throw new IllegalArgumentException("La tarifa no existe");
         }
 
         if(!(Objects.equals(nuevoTipo, "normal") || Objects.equals(nuevoTipo, "dia especial") || Objects.equals(nuevoTipo, "fin de semana"))){
-            System.out.println("la tarifa debe ser de tipo normal, dia especial o fin de semana");
-            return;
+            throw new IllegalArgumentException("la tarifa debe ser de tipo normal, dia especial o fin de semana");
         }
 
         if(nuevoTiempomax < 0){
-            System.out.println(" El tiempo maximo permitido debe ser positivo");
-            return;
+            throw new IllegalArgumentException(" El tiempo maximo permitido debe ser positivo");
         }
 
         if(nuevoPrecio < 0){
-            System.out.println(" El precio debe ser positivo");
-            return;
+            throw new IllegalArgumentException(" El precio debe ser positivo");
         }
 
         if(nuevaDuracion < nuevoTiempomax){
-            System.out.println("La duración total de la reserva debe ser mayor que el tiempo máximo permitido");
-            return;
+            throw new IllegalArgumentException("La duración total de la reserva debe ser mayor que el tiempo máximo permitido");
         }
 
         tarifa.setNumeroVueltas(nuevasVueltas);

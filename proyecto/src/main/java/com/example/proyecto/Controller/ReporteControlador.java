@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("*")
 @RequestMapping("/reporte")
 public class ReporteControlador {
     @Autowired
@@ -15,6 +15,6 @@ public class ReporteControlador {
 
     @PostMapping("/hacerReporte")
     public ResponseEntity<Reporte> hacerReporte(@RequestBody Reporte reporte) {
-        return ResponseEntity.ok(reporteServicio.crearReporte(reporte.tipo, reporte.fechaInicio, reporte.fechaFin));
+        return ResponseEntity.ok(reporteServicio.crearReporte(reporte.getTipo(), reporte.getFechaInicio(), reporte.getFechaFin()));
     }
 }

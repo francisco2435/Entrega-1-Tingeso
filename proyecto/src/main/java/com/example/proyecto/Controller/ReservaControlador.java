@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("*")
 @RequestMapping("/reserva")
 public class ReservaControlador {
     @Autowired
@@ -18,8 +18,8 @@ public class ReservaControlador {
 
     @PostMapping("/hacerReserva")
     public ResponseEntity<Reserva> hacerReserva(@RequestBody Reserva reserva) {
-        return ResponseEntity.ok(reservaServicio.hacerReserva(reserva.rutCliente, reserva.nombreCliente, reserva.fechaReserva, reserva.horaInicio, reserva.tiempoMax,
-        reserva.numVueltas, reserva.cantidadPersonas, reserva.rutsAmigos, reserva.nombres));
+        return ResponseEntity.ok(reservaServicio.hacerReserva(reserva.getRutCliente(), reserva.getNombreCliente(), reserva.getFechaReserva(), reserva.getHoraInicio(), reserva.getTiempoMax(),
+        reserva.getNumVueltas(), reserva.getCantidadPersonas(), reserva.getRutsAmigos(), reserva.getNombres()));
     }
 
     @GetMapping("/obtenerReservas")

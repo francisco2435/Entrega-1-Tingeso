@@ -8,18 +8,17 @@ import lombok.Data;
 
 
 @Entity
-@Data
 public class Tarifa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //Id autoincremental
-    public Long id;
+    private Long id;
 
-    public int numeroVueltas;
-    public int tiempoMax;
-    public double precio;
-    public int duracionReserva;
-    public String tipo; // Puede ser "normal", "especial", o "fin de semana"
+    private int numeroVueltas;
+    private int tiempoMax;
+    private double precio;
+    private int duracionReserva;
+    private String tipo; // Puede ser "normal", "especial", o "fin de semana"
 
     public Tarifa() {
     }
@@ -30,6 +29,30 @@ public class Tarifa {
         this.precio = precio;
         this.duracionReserva = duracionReserva;
         this.tipo = tipo;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public int getNumeroVueltas() {
+        return numeroVueltas;
+    }
+
+    public int getTiempoMax() {
+        return tiempoMax;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public int getDuracionReserva() {
+        return duracionReserva;
+    }
+
+    public String getTipo() {
+        return tipo;
     }
 
     public void setNumeroVueltas(int numeroVueltas) {

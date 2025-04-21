@@ -1,21 +1,21 @@
-import axios from 'axios';
+import httpClient from "../http-common";
 
-const TARIFA_API_URL = 'http://localhost:8090/tarifa'; 
+const TARIFA_API_URL = '/tarifa'; 
 
 const obtenerTarifas = () => {
-    return axios.get(`${TARIFA_API_URL}/obtenerTarifas`);
+    return httpClient.get(`${TARIFA_API_URL}/obtenerTarifas`);
 };
 
 const crearTarifa = (nuevaTarifa) => {
-    return axios.post(`${TARIFA_API_URL}/nuevaTarifa`, nuevaTarifa); 
+    return httpClient.post(`${TARIFA_API_URL}/nuevaTarifa`, nuevaTarifa); 
 };
 
 const modificarTarifa = (tarifa) => {
-    return axios.put(`${TARIFA_API_URL}/modificarTarifa`, tarifa); 
+    return httpClient.put(`${TARIFA_API_URL}/modificarTarifa`, tarifa); 
 };
 
 const obtenerTarifa = (id) => {
-    return axios.get(`${TARIFA_API_URL}/obtenerTarifa?id=${id}`);
+    return httpClient.get(`${TARIFA_API_URL}/obtenerTarifa?id=${id}`);
 };
 
 export default {

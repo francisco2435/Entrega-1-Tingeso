@@ -1,16 +1,16 @@
 // src/services/kart.servicio.js
-import axios from "axios";
+import httpClient from "../http-common";
 
-const BASE_URL = "http://localhost:8090/kart";
+const BASE_URL = "/kart";
 
 const obtenerKartsPorEstado = (estado) => {
-  return axios.get(`${BASE_URL}/getKartsEstado`, {
+  return httpClient.get(`${BASE_URL}/getKartsEstado`, {
     params: { estado },
   });
 };
 
 const cambiarEstadoKart = (codigo, newEstado) => {
-  return axios.put(`${BASE_URL}/cambiarEstado`, null, {
+  return httpClient.put(`${BASE_URL}/cambiarEstado`, null, {
     params: { codigo, newEstado },
   });
 };

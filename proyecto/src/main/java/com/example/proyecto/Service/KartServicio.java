@@ -15,7 +15,7 @@ public class KartServicio {
     //Nuevo kart
     public Kart nuevoKart(String codigo, String modelo, String estado) {
         Kart newKart = new Kart(codigo, modelo, estado);
-        Kart existente = kartRepositorio.findByCodigo(newKart.codigo);
+        Kart existente = kartRepositorio.findByCodigo(newKart.getCodigo());
         if (existente != null) {
             return null;
         }
@@ -25,7 +25,7 @@ public class KartServicio {
     // Obtener karts a partir de su estado (disponible, mantenimiento y ocupado)
     public List<Kart> obtenerKartsEstado(String estado) {
         if (estado == null || estado.isBlank()) {
-            System.out.println("\"El estado no puede ser nulo o vacío.");
+            throw new IllegalArgumentException("\"El estado no puede ser nulo o vacío.");
         }
         return kartRepositorio.findByEstado(estado);
     }
@@ -35,8 +35,7 @@ public class KartServicio {
         Kart kart = kartRepositorio.findByCodigo(codigo);
 
         if (kart == null) {
-            System.out.println("Kart no encontrado con código: " + codigo);
-            return;
+            throw new IllegalArgumentException("Kart no encontrado con código: " + codigo);
         }
 
         kart.setEstado(newEstado);

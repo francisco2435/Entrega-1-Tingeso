@@ -1,10 +1,10 @@
-import axios from "axios";
+import httpClient from "../http-common";
 
-const REPORTE_API_URL = "http://localhost:8090/reporte";
+const REPORTE_API_URL = "/reporte";
 
 // Método para hacer un reporte
 const hacerReporte = (reporte) => {
-  return axios.post(`${REPORTE_API_URL}/hacerReporte`, reporte);
+  return httpClient.post(`${REPORTE_API_URL}/hacerReporte`, reporte);
 };
 
 export default {

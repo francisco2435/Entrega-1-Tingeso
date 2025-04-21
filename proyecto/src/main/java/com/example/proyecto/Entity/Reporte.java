@@ -14,29 +14,28 @@ import java.time.YearMonth;
 import java.util.List;
 
 @Entity
-@Data
 public class Reporte {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //Id autoincremental
-    public Long id;
-    public String tipo;
-    public LocalDateTime fechaCreacion;
-    public LocalDate fechaInicio;
-    public LocalDate fechaFin;
+    private Long id;
+    private String tipo;
+    private LocalDateTime fechaCreacion;
+    private LocalDate fechaInicio;
+    private LocalDate fechaFin;
 
     public List<String> ColumnasMeses;
-    public List<String> Filastipo;
+    private List<String> Filastipo;
 
-    public List<Double> vueltas1010;
-    public List<Double> vueltas1515;
-    public List<Double> vueltas2020;
+    private List<Double> vueltas1010;
+    private List<Double> vueltas1515;
+    private List<Double> vueltas2020;
 
-    public List<Double> personas1a2;
-    public List<Double> personas3a5;
-    public List<Double> personas6a10;
-    public List<Double> personas11a15;
+    private List<Double> personas1a2;
+    private List<Double> personas3a5;
+    private List<Double> personas6a10;
+    private List<Double> personas11a15;
 
-    public List<Double> totalesFilas;
+    private List<Double> totalesFilas;
 
     public Reporte() {
     }
@@ -66,5 +65,65 @@ public class Reporte {
         this.personas6a10 = personas6a10;
         this.personas11a15 = personas11a15;
         this.totalesFilas = totalesFilas;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
+    public List<String> getColumnasMeses() {
+        return ColumnasMeses;
+    }
+
+    public List<String> getFilastipo() {
+        return Filastipo;
+    }
+
+    public List<Double> getVueltas1010() {
+        return vueltas1010;
+    }
+
+    public List<Double> getVueltas1515() {
+        return vueltas1515;
+    }
+
+    public List<Double> getVueltas2020() {
+        return vueltas2020;
+    }
+
+    public List<Double> getPersonas1a2() {
+        return personas1a2;
+    }
+
+    public List<Double> getPersonas3a5() {
+        return personas3a5;
+    }
+
+    public List<Double> getPersonas6a10() {
+        return personas6a10;
+    }
+
+    public List<Double> getPersonas11a15() {
+        return personas11a15;
+    }
+
+    public List<Double> getTotalesFilas() {
+        return totalesFilas;
     }
 }

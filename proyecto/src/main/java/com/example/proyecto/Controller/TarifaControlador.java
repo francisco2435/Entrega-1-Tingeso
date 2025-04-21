@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin("*")
 @RequestMapping("/tarifa")
 public class TarifaControlador {
     @Autowired
@@ -18,7 +18,7 @@ public class TarifaControlador {
     //Crear Tarifa
     @PostMapping("/nuevaTarifa")
     public ResponseEntity<Tarifa> nuevaTarifa(@RequestBody Tarifa tarifa) {
-        return ResponseEntity.ok(tarifaServicio.NuevaTarifa(tarifa.numeroVueltas, tarifa.tiempoMax, tarifa.precio, tarifa.duracionReserva, tarifa.tipo));
+        return ResponseEntity.ok(tarifaServicio.NuevaTarifa(tarifa.getNumeroVueltas(), tarifa.getTiempoMax(), tarifa.getPrecio(), tarifa.getDuracionReserva(), tarifa.getTipo()));
     }
 
     @GetMapping("/obtenerTarifas")
@@ -28,7 +28,7 @@ public class TarifaControlador {
 
     @PutMapping("/modificarTarifa")
     public void modificarTarifa(@RequestBody Tarifa tarifa) {
-        tarifaServicio.modificarTarifa(tarifa.id, tarifa.numeroVueltas, tarifa.tiempoMax, tarifa.precio, tarifa.duracionReserva, tarifa.tipo);
+        tarifaServicio.modificarTarifa(tarifa.getId(), tarifa.getNumeroVueltas(), tarifa.getTiempoMax(), tarifa.getPrecio(), tarifa.getDuracionReserva(), tarifa.getTipo());
     }
 
     @GetMapping("/obtenerTarifa")
