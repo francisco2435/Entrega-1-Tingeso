@@ -4,7 +4,7 @@ pipeline {
         stage("Build Frontend") {
             steps {
                 checkout scmGit(branches: [[name: '*/main']], 
-                                userRemoteConfigs: [[url: 'https://github.com/thxmohamed/Tingeso']])
+                                userRemoteConfigs: [[url: 'https://github.com/francisco2435/Entrega-1-Tingeso']])
                 dir("frontend") {
                     bat "npm install"
                     bat "npm run build"
@@ -20,12 +20,12 @@ pipeline {
         }
         stage("Build and Push Docker Image") {
             steps {
-                dir("frontend") {
+                dir("proyecto-Front") {
                     script {
                         withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                             bat 'docker login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%" https://index.docker.io/v1/'
-                            bat "docker build -t thxmohamed/frontend-container ."
-                            bat "docker push thxmohamed/frontend-container"
+                            bat "docker build -t franciscoriquelmenunez/frontend-container ."
+                            bat "docker push franciscoriquelmenunez/frontend-container"
                         }
                     }
                 }
