@@ -48,7 +48,8 @@ public class TarifaServicio {
 
     //modificar alguna caracteristica de una tarifa
     public void modificarTarifa(Long id, int nuevasVueltas, int nuevoTiempomax, double nuevoPrecio, int nuevaDuracion, String nuevoTipo){
-        Tarifa tarifa = tarifaRepositorio.findById(id).get();
+        Tarifa tarifa = tarifaRepositorio.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Tarifa no encontrada"));
 
         if(tarifa == null){
             throw new IllegalArgumentException("La tarifa no existe");
