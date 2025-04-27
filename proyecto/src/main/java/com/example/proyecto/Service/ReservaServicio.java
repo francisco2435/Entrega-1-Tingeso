@@ -483,7 +483,7 @@ public class ReservaServicio {
         contentStream.newLineAtOffset(0, -15);
         contentStream.showText("IVA (19%): " + reserva.getValorIva());
         contentStream.newLineAtOffset(0, -15);
-        contentStream.showText("Monto total con IVA: " + reserva.getMontoTotal());
+        contentStream.showText("Monto total con IVA: " + reserva.getMontoTotalConIva());
 
         contentStream.endText();
         contentStream.close();
