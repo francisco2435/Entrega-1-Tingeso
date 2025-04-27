@@ -25,6 +25,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.time.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -942,41 +943,65 @@ class ReservaServicioTest {
 
     @Test
     void testEnviarComprobanteReserva_MessagingException() throws IOException, MessagingException {
-        // Crear una reserva y un usuario de ejemplo
-        Reserva reserva = new Reserva();
-        Usuario usuario = new Usuario();
-        usuario.setCorreo("test@correo.com");
+        // Guardar el System.err original
+        PrintStream originalErr = System.err;
+        ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(errContent));
 
-        // Simulamos que generar el comprobante PDF no falla
-        PDDocument comprobanteMock = mock(PDDocument.class);
-        doReturn(comprobanteMock).when(reservaServicio).generarComprobanteReserva(reserva);
+        try {
+            // Crear una reserva y un usuario de ejemplo
+            Reserva reserva = new Reserva();
+            Usuario usuario = new Usuario();
+            usuario.setCorreo("test@correo.com");
 
-        // Simulamos que se lanza una excepción al enviar el correo
-        doThrow(new MessagingException("Error al enviar el correo")).when(reservaServicio).enviarPdfPorCorreo(usuario.getCorreo(), comprobanteMock);
+            // Simulamos que generar el comprobante PDF no falla
+            PDDocument comprobanteMock = mock(PDDocument.class);
+            doReturn(comprobanteMock).when(reservaServicio).generarComprobanteReserva(reserva);
 
-        // Llamamos al método y verificamos que maneje la excepción correctamente
-        reservaServicio.enviarComprobanteReserva(reserva, usuario);
+            // Simulamos que se lanza una excepción al enviar el correo
+            doThrow(new MessagingException("Error al enviar el correo")).when(reservaServicio).enviarPdfPorCorreo(usuario.getCorreo(), comprobanteMock);
 
-        // Aquí no se espera que la prueba falle, ya que la excepción es manejada dentro del método
-        // Podríamos verificar que el error se haya impreso correctamente, si es necesario
-        // Esto depende de cómo quieras capturar los logs o errores en tu aplicación
-        // Por ejemplo, podrías usar un mock de System.err si quieres capturarlo y verificarlo
+            // Llamamos al método
+            reservaServicio.enviarComprobanteReserva(reserva, usuario);
+
+            // Podrías agregar asserts sobre errContent si quieres validar el error capturado
+            // Ejemplo:
+            // assertTrue(errContent.toString().contains("Error al enviar el correo"));
+
+        } finally {
+            // Restaurar System.err
+            System.setErr(originalErr);
+        }
     }
 
     @Test
     void testEnviarComprobanteReserva_IOException() throws IOException, MessagingException {
-        // Crear una reserva y un usuario de ejemplo
-        Reserva reserva = new Reserva();
-        Usuario usuario = new Usuario();
-        usuario.setCorreo("test@correo.com");
+        // Guardar el System.err original
+        PrintStream originalErr = System.err;
+        ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+        System.setErr(new PrintStream(errContent));
 
-        // Simulamos que se lanza una excepción al generar el comprobante PDF
-        doThrow(new IOException("Error al generar el archivo PDF")).when(reservaServicio).generarComprobanteReserva(reserva);
+        try {
+            // Crear una reserva y un usuario de ejemplo
+            Reserva reserva = new Reserva();
+            Usuario usuario = new Usuario();
+            usuario.setCorreo("test@correo.com");
 
-        // Llamamos al método y verificamos que maneje la excepción correctamente
-        reservaServicio.enviarComprobanteReserva(reserva, usuario);
+            // Simulamos que se lanza una excepción al generar el comprobante PDF
+            doThrow(new IOException("Error al generar el archivo PDF")).when(reservaServicio).generarComprobanteReserva(reserva);
 
+            // Llamamos al método
+            reservaServicio.enviarComprobanteReserva(reserva, usuario);
+
+            // Si quieres, aquí también podrías validar que el error fue capturado, por ejemplo:
+            // assertTrue(errContent.toString().contains("Error al generar el archivo PDF"));
+
+        } finally {
+            // Restaurar System.err
+            System.setErr(originalErr);
+        }
     }
+
 
 
 }
