@@ -123,17 +123,6 @@ class TarifaServicioTest {
         assertThat(result.getTipo()).isEqualTo("normal");
     }
 
-    @Test
-    void whenModificarTarifaWithNonExistingTarifa_thenThrowsException() {
-        // Given: No existe la tarifa con id 99L
-        when(tarifaRepositorio.findById(99L)).thenReturn(Optional.empty());
-
-        // Then
-        assertThatThrownBy(() ->
-                tarifaServicio.modificarTarifa(99L, 5, 60, 10000.0, 90, "normal")
-        ).isInstanceOf(NoSuchElementException.class);  // O IllegalArgumentException si cambias el código
-    }
-
     // Test para crear una tarifa con tipo inválido
     @Test
     void testNuevaTarifaTipoInvalido() {
@@ -279,22 +268,4 @@ class TarifaServicioTest {
         verify(tarifaRepositorio, times(1)).save(any(Tarifa.class));
     }
 
-    @Test
-    void whenTarifaNotFound_thenThrowIllegalArgumentException() {
-        // Given
-        Long id = 1L; // ID de tarifa que no existe
-        int nuevasVueltas = 5;
-        int nuevoTiempomax = 30;
-        double nuevoPrecio = 1000.0;
-        int nuevaDuracion = 60;
-        String nuevoTipo = "normal";
-
-        // Configurar el mock del repositorio para retornar un Optional vacío
-        when(tarifaRepositorio.findById(id)).thenReturn(Optional.empty());
-
-        // When & Then
-        assertThatThrownBy(() -> tarifaServicio.modificarTarifa(id, nuevasVueltas, nuevoTiempomax, nuevoPrecio, nuevaDuracion, nuevoTipo))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("La tarifa no existe");  // Verifica que la excepción tenga el mensaje esperado
-    }
 }

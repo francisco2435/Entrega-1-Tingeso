@@ -31,7 +31,7 @@ pipeline {
 
         stage("Build and Push Docker Image") {
             steps {
-                dir("backend") {
+                dir("proyecto") {
                     script {
                         withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                             bat 'docker login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%" https://index.docker.io/v1/'
