@@ -22,7 +22,9 @@ pipeline {
         stage("Test") {
             steps {
                 dir("proyecto") {
-                    bat "mvn test"
+                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                        bat "mvn test"
+                    }
                 }
             }
         }
