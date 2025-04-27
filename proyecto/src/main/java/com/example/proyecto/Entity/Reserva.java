@@ -159,4 +159,88 @@ public class Reserva {
     public double getMontoTotalConIva() {
         return montoTotalConIva;
     }
+
+    public void setRutCliente(String rutCliente) {
+        this.rutCliente = rutCliente;
+    }
+
+    public void setNombreCliente(String nombreCliente) {
+        this.nombreCliente = nombreCliente;
+    }
+
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+
+    public void setHoraFin(LocalTime horaFin) {
+        this.horaFin = horaFin;
+    }
+
+    public void setTiempoTotal(int tiempoTotal) {
+        this.tiempoTotal = tiempoTotal;
+    }
+
+    public void setRutsAmigos(List<String> rutsAmigos) {
+        this.rutsAmigos = rutsAmigos;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setFechaReserva(LocalDate fechaReserva) {
+        this.fechaReserva = fechaReserva;
+    }
+
+    public void setTipoTarifa(String tipoTarifa) {
+        TipoTarifa = tipoTarifa;
+    }
+
+    public void setHoraReserva(LocalTime horaReserva) {
+        this.horaReserva = horaReserva;
+    }
+
+    public void setNumVueltas(int numVueltas) {
+        this.numVueltas = numVueltas;
+    }
+
+    public void setTiempoMax(int tiempoMax) {
+        this.tiempoMax = tiempoMax;
+    }
+
+    public void setCantidadPersonas(int cantidadPersonas) {
+        this.cantidadPersonas = cantidadPersonas;
+    }
+
+    public void setNombres(List<String> nombres) {
+        this.nombres = nombres;
+    }
+
+    public void setNombreDescuentoTamanoGrupo(List<String> nombreDescuentoTamanoGrupo) {
+        this.nombreDescuentoTamanoGrupo = nombreDescuentoTamanoGrupo;
+    }
+
+    public void setValorDescuentoTamanoGrupo(List<Double> valorDescuentoTamanoGrupo) {
+        this.valorDescuentoTamanoGrupo = valorDescuentoTamanoGrupo;
+    }
+
+    public void setNombreDescuentoEspeciales(List<String> nombreDescuentoEspeciales) {
+        this.nombreDescuentoEspeciales = nombreDescuentoEspeciales;
+    }
+
+    public void setValorDescuentoEspeciales(List<Double> valorDescuentoEspeciales) {
+        this.valorDescuentoEspeciales = valorDescuentoEspeciales;
+    }
+
+    public void setMontoTotal(double montoTotal) {
+        this.montoTotal = montoTotal;
+    }
+
+    public void setValorIva(double valorIva) {
+        this.valorIva = valorIva;
+    }
+
+    public void setMontoTotalConIva(double montoTotalConIva) {
+        this.montoTotalConIva = montoTotalConIva;
+    }
 }

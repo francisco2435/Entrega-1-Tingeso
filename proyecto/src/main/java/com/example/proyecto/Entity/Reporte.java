@@ -37,6 +37,8 @@ public class Reporte {
 
     private List<Double> totalesFilas;
 
+
+
     public Reporte() {
     }
 

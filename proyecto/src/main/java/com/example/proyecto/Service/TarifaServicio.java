@@ -2,6 +2,7 @@ package com.example.proyecto.Service;
 
 import com.example.proyecto.Entity.Tarifa;
 import com.example.proyecto.Repository.TarifaRepositorio;
+import com.example.proyecto.Repository.UsuarioRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -11,6 +12,11 @@ import java.util.Objects;
 public class TarifaServicio {
     @Autowired
     TarifaRepositorio tarifaRepositorio;
+
+    @Autowired
+    public TarifaServicio(TarifaRepositorio tarifaRepositorio) {
+        this.tarifaRepositorio = tarifaRepositorio;
+    }
 
     // Crear una tarifa
     public Tarifa NuevaTarifa(int numeroVueltas, int tiempoMax, Double precio, int duracionReserva, String tipo){
@@ -43,6 +49,7 @@ public class TarifaServicio {
     //modificar alguna caracteristica de una tarifa
     public void modificarTarifa(Long id, int nuevasVueltas, int nuevoTiempomax, double nuevoPrecio, int nuevaDuracion, String nuevoTipo){
         Tarifa tarifa = tarifaRepositorio.findById(id).get();
+
         if(tarifa == null){
             throw new IllegalArgumentException("La tarifa no existe");
         }

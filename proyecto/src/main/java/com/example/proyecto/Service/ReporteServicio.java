@@ -4,6 +4,7 @@ import com.example.proyecto.Entity.Reporte;
 import com.example.proyecto.Entity.Reserva;
 import com.example.proyecto.Repository.ReporteRepositorio;
 import com.example.proyecto.Repository.ReservaRepositorio;
+import com.example.proyecto.Repository.UsuarioRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,13 @@ public class ReporteServicio {
 
     @Autowired
     private ReservaRepositorio reservaRepositorio;
+
+    @Autowired
+    public ReporteServicio(ReporteRepositorio reporteRepositorio, ReservaRepositorio reservaRepositorio) {
+        this.reporteRepositorio = reporteRepositorio;
+        this.reservaRepositorio = reservaRepositorio;
+    }
+
 
     //Crear reporte según el tipo escogido número de vueltas, tiempo máximo o n° personas
     public Reporte crearReporte(String tipo, LocalDate fechaInicio, LocalDate fechaFin) {
@@ -81,7 +89,6 @@ public class ReporteServicio {
         Reporte reporte = new Reporte(tipo, fechaCreacion, fechaInicio, fechaFin, meses, filas, personas1a2, personas3a5, personas6a10, personas11a15, totales);
         return reporteRepositorio.save(reporte);
    }
-
     public List<String> obtenerMesesEntre(LocalDate fechaInicio, LocalDate fechaFin) {
         if (fechaInicio.isAfter(fechaFin)) {
             return null;
@@ -108,14 +115,12 @@ public class ReporteServicio {
         if (fechaInicio.isAfter(fechaFin)) {
             return null;
         }
-
         List<Double> totales = new ArrayList<>();
 
         // Obtener los meses entre las fechas
         List<YearMonth> meses = new ArrayList<>();
         YearMonth inicio = YearMonth.from(fechaInicio);
         YearMonth fin = YearMonth.from(fechaFin);
-
         while (!inicio.isAfter(fin)) {
             meses.add(inicio);
             inicio = inicio.plusMonths(1);
@@ -125,7 +130,6 @@ public class ReporteServicio {
         for (int i = 0; i < meses.size(); i++) {
             totales.add(0.0);
         }
-
         // Obtener reservas en el rango
         List<Reserva> reservas = reservaRepositorio.findByFechaReservaBetween(fechaInicio, fechaFin);
 
@@ -152,14 +156,11 @@ public class ReporteServicio {
         if (fechaInicio.isAfter(fechaFin)) {
             return null;
         }
-
         List<Double> totales = new ArrayList<>();
-
         // Obtener los meses entre las fechas
         List<YearMonth> meses = new ArrayList<>();
         YearMonth inicio = YearMonth.from(fechaInicio);
         YearMonth fin = YearMonth.from(fechaFin);
-
         while (!inicio.isAfter(fin)) {
             meses.add(inicio);
             inicio = inicio.plusMonths(1);
@@ -169,8 +170,6 @@ public class ReporteServicio {
         for (int i = 0; i < meses.size(); i++) {
             totales.add(0.0);
         }
-
-        // Obtener reservas en el rango
         List<Reserva> reservas = reservaRepositorio.findByFechaReservaBetween(fechaInicio, fechaFin);
 
         for (Reserva reserva : reservas) {
@@ -191,5 +190,6 @@ public class ReporteServicio {
 
         return totales;
     }
+
 
 }

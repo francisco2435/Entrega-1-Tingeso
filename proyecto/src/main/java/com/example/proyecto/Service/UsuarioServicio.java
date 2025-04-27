@@ -2,6 +2,7 @@ package com.example.proyecto.Service;
 
 
 import com.example.proyecto.Entity.Usuario;
+import com.example.proyecto.Repository.KartRepositorio;
 import com.example.proyecto.Repository.UsuarioRepositorio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,12 @@ import java.time.LocalDate;
 public class UsuarioServicio {
     @Autowired
     private UsuarioRepositorio usuarioRepositorio;
+
+    @Autowired
+    public UsuarioServicio(UsuarioRepositorio usuarioRepositorio) {
+        this.usuarioRepositorio = usuarioRepositorio;
+    }
+
 
     //Nuevo Usuario
     public Usuario registrarUsuario(String nombre, String rut, String correo, String telefono, String rol, String contrasenia, LocalDate fechaNacimiento) {

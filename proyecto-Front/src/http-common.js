@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const proyectoBackendServer = "localhost:80";
+const proyectoBackendServer = "localhost:8090";
 
 console.log(proyectoBackendServer)
 

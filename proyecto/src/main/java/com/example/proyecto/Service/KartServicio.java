@@ -12,6 +12,11 @@ public class KartServicio {
     @Autowired
     private KartRepositorio kartRepositorio;
 
+    @Autowired
+    public KartServicio(KartRepositorio kartRepositorio) {
+        this.kartRepositorio = kartRepositorio;
+    }
+
     //Nuevo kart
     public Kart nuevoKart(String codigo, String modelo, String estado) {
         Kart newKart = new Kart(codigo, modelo, estado);

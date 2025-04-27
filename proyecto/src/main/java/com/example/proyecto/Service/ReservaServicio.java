@@ -28,6 +28,7 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -47,6 +48,14 @@ public class ReservaServicio {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    public ReservaServicio(ReservaRepositorio reservaRepositorio, KartRepositorio kartRepositorio, TarifaRepositorio tarifaRepositorio, JavaMailSender mailSender, UsuarioRepositorio usuarioRepositorio) {
+        this.reservaRepositorio = reservaRepositorio;
+        this.kartRepositorio = kartRepositorio;
+        this.tarifaRepositorio = tarifaRepositorio;
+        this.mailSender = mailSender;
+        this.usuarioRepositorio = usuarioRepositorio;
+    }
 
     // hacer Reserva
     public Reserva hacerReserva(String rutCliente, String nombreCliente, LocalDate fecha, LocalTime horaInicio, int tiempoMax,
@@ -64,7 +73,6 @@ public class ReservaServicio {
         double montoTotal = 0;
         double valorIva = 0.19; //un 19%, según lo fija el artículo 14 de la Ley sobre Impuesto a las Ventas y Servicios
         double montoTotalConIva = 0;
-
 
         //Añadir al inicio al cliente quien está haciendo la reserva
         rutsAmigos.add(0, rutCliente);
@@ -188,13 +196,10 @@ public class ReservaServicio {
         if(usuario == null){
             throw new IllegalArgumentException("rut ingresado no está registrado");
         }
-
         enviarComprobanteReserva(reserva, usuario);
 
         return reservaRepositorio.save(reserva);
     }
-
-
     // Obtener descuentos
     // Devolverá el descuento que se debería aplicar en el formato [indice el tipo de descuento. valor del descuento menos el indice]
     public double calcularDescuento(String rutIntegrante, int cantidadIntegrantes, LocalDate fecha, int descuentosCumpleanosAplicados) {
@@ -244,31 +249,32 @@ public class ReservaServicio {
         return descuentos.stream().max(Double::compare).orElse(0.0);
     }
 
-    public int calcularFrecuencia(LocalDate fecha, String rutIntegrante){
-        //Obtener las reservas realizadas en el mes
+    public int calcularFrecuencia(LocalDate fecha, String rutIntegrante) {
+        // Verificar si el rutIntegrante es null o vacío y lanzar excepción
+        if (rutIntegrante == null || rutIntegrante.isEmpty()) {
+            throw new IllegalArgumentException("El rut no puede ser vacío");
+        }
+
+        // Obtener las reservas realizadas en el mes
         YearMonth mesIngresado = YearMonth.from(fecha);
         LocalDate inicioMes = mesIngresado.atDay(1);
         LocalDate finMes = mesIngresado.atEndOfMonth();
-        int frecuenciaReservasRealizadas = 0;    //cuantas veces aparece su rut en las reservas del mes
-        int frecuenciaEnListaRuts = 0;           //Cuantas veces aparece el rut en las listas de ruts
+        int frecuenciaReservasRealizadas = 0;  // Cuantas veces aparece su rut en las reservas del mes
 
+        // Obtener las reservas del mes
         List<Reserva> reservasDelMes = reservaRepositorio.findByFechaReservaBetween(inicioMes, finMes);
 
         for (Reserva reserva : reservasDelMes) {
-            if (reserva.getRutsAmigos() != null) { // Evitar agregar valores null
-                if(reserva.getRutsAmigos().contains(rutIntegrante)){ //revisar si el rut se encuentra en lista de ruts
-                    frecuenciaReservasRealizadas++;
-                }
-            }
-        }
-
-        for (Reserva reserva : reservasDelMes) {
-            if (reserva.getRutCliente().equals(rutIntegrante)) { //revisar si el rut ha hecho alguna otra reserva
+            // Si el rutIntegrante es el cliente que hace la reserva o está en la lista de amigos
+            if (reserva.getRutCliente().equals(rutIntegrante) ||
+                    (reserva.getRutsAmigos() != null && reserva.getRutsAmigos().contains(rutIntegrante))) {
                 frecuenciaReservasRealizadas++;
             }
         }
-        return frecuenciaReservasRealizadas + frecuenciaEnListaRuts;
+
+        return frecuenciaReservasRealizadas;
     }
+
 
     // Comprobar tope de horario
     public boolean comprobarTopeHorario(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, int numIntegrantes){
@@ -290,6 +296,10 @@ public class ReservaServicio {
     // Comprobar que las fechas seleccionadas estén dentro del horario de trabajo
     // ( Lunes a Viernes: 14:00 a 22:00 horas o Sábados, Domingos y Feriados: 10:00 a 22:00 horas. )
     public boolean comprobarHorarioTrabajo(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
+        if (fecha == null || horaInicio == null || horaFin == null) {
+            throw new IllegalArgumentException("La fecha, hora de inicio y hora de fin no pueden ser nulas");
+        }
+
         int tipoDeDia = diasEspeciales(fecha); // 0 = día normal, 1 = fin de semana, 2 = feriado
         LocalTime apertura;
         LocalTime cierre = LocalTime.of(22, 0);
@@ -304,12 +314,12 @@ public class ReservaServicio {
         return !horaInicio.isBefore(apertura) && !horaFin.isAfter(cierre);
     }
 
+
     // obtener la cantidad de karts disponibles dentro de ese horario
     public int obtenerCantidadKartsDisponibles(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin) {
         // Obtener la cantidad total de karts disponibles
         int kartsTotal = kartRepositorio.findByEstado("disponible").size();
         int kartsOcupados = 0; // Contador de karts ocupados en el horario dado
-
         // Obtener las reservas del día
         List<Reserva> reservas = reservaRepositorio.findByFechaReserva(fecha);;
 
@@ -335,7 +345,8 @@ public class ReservaServicio {
 
     // Obtener todas las reservas RF 7 Rack semanal
     public List<Reserva> ObtenerReservas(){
-        return reservaRepositorio.findAll();
+        List<Reserva> reservas = reservaRepositorio.findAll();
+        return reservas != null ? reservas : Collections.emptyList();  // Si es null, devolvemos una lista vacía
     }
 
     // Obtener tarifa correspondiente
@@ -345,47 +356,56 @@ public class ReservaServicio {
         if (numVueltas == 0 && tiempoMax == 0) {
             throw new IllegalArgumentException("Debe especificar numVueltas o tiempoMax.");
         }
-        if(numVueltas != 0){
+        Tarifa tarifa = null;
+
+        if (numVueltas != 0) {
             if (tipoDeDia == 0) {
-                return tarifaRepositorio.findByTipoAndNumeroVueltas("normal", numVueltas);
+                tarifa = tarifaRepositorio.findByTipoAndNumeroVueltas("normal", numVueltas);
             } else if (tipoDeDia == 1) {
-                return tarifaRepositorio.findByTipoAndNumeroVueltas("fin de semana", numVueltas);
+                tarifa = tarifaRepositorio.findByTipoAndNumeroVueltas("fin de semana", numVueltas);
             } else {
-                return tarifaRepositorio.findByTipoAndNumeroVueltas("dia especial", numVueltas);
+                tarifa = tarifaRepositorio.findByTipoAndNumeroVueltas("dia especial", numVueltas);
             }
-        } else { //Si numVueltas==0, entonces tiempoMax debe ser distinto de cero
+        } else {
             if (tipoDeDia == 0) {
-                return tarifaRepositorio.findByTipoAndTiempoMax("normal", tiempoMax);
+                tarifa = tarifaRepositorio.findByTipoAndTiempoMax("normal", tiempoMax);
             } else if (tipoDeDia == 1) {
-                return tarifaRepositorio.findByTipoAndTiempoMax("fin de semana", tiempoMax);
+                tarifa = tarifaRepositorio.findByTipoAndTiempoMax("fin de semana", tiempoMax);
             } else {
-                return tarifaRepositorio.findByTipoAndTiempoMax("dia especial", tiempoMax);
+                tarifa = tarifaRepositorio.findByTipoAndTiempoMax("dia especial", tiempoMax);
             }
         }
+
+        if (tarifa == null) {
+            throw new IllegalArgumentException("No se encontró una tarifa válida para los parámetros dados.");
+        }
+
+        return tarifa;
     }
 
-
     // Hacer lista de dias feriados y comprobar si la reserva será en estos días (2), fin de semana (1) o dia normal (0)
-    public int diasEspeciales(LocalDate fecha){
-        //Comprobar si es fin de semana
-        DayOfWeek dia = fecha.getDayOfWeek(); //Comprobar si es fin de semana
-        if(dia == DayOfWeek.SATURDAY || dia == DayOfWeek.SUNDAY){
+    public int diasEspeciales(LocalDate fecha) {
+        if (fecha == null) {
+            throw new IllegalArgumentException("La fecha no puede ser nula");
+        }
+
+        // Comprobar si es fin de semana
+        DayOfWeek dia = fecha.getDayOfWeek(); // Comprobar si es fin de semana
+        if (dia == DayOfWeek.SATURDAY || dia == DayOfWeek.SUNDAY) {
             return 1;
         }
-        //Comprobar si la reserva es día feriado
+        // Comprobar si la reserva es día feriado
         List<LocalDate> feriados = obtenerFeriadosChile(fecha.getYear());
-        if(feriados.contains(fecha)){
+        if (feriados.contains(fecha)) {
             return 2;
         }
-        //Si no es ni fin de semana o feriado, retorno 0 para el día normal
+        // Si no es ni fin de semana o feriado, retorno 0 para el día normal
         return 0;
     }
 
     //Metodo para obtener los feriados de año
     public List<LocalDate> obtenerFeriadosChile(int year) {
         List<LocalDate> feriados = new ArrayList<>();
-
-        // Feriados fijos
         feriados.add(LocalDate.of(year, 1, 1));   // Año Nuevo
         feriados.add(LocalDate.of(year, 4, 18));  // Viernes Santo
         feriados.add(LocalDate.of(year, 4, 19));  // Sábado Santo
@@ -404,15 +424,7 @@ public class ReservaServicio {
 
         return feriados;
     }
-
     // Crear comprobante (esperar respuesta del profe, si se debe hacer un pdf y mandar comprobante se hará este metodo, si no, solo se muestra por pantalla)
-    //public boolean crearComprobante(Long id, LocalDate fechaReserva, LocalTime horaReserva, int numVueltas, int tiempoMax, int cantidadPersonas,
-    //                                String nombreReservante, List<String> nombres, String tarifatipo, double tarifaValor, List<String> nombreDescuentoTamanoGrupo,
-    //                                List<Double> valorDescuentoTamanoGrupo, List<String> nombreDescuentoEspeciales, List<Double> valorDescuentoEspeciales,
-    //                                double montoTotal, double valorIva, double montoTotalConIva){
-
-    //}
-
     public PDDocument generarComprobanteReserva(Reserva reserva) throws IOException {
         PDDocument document = new PDDocument();
         PDPage page = new PDPage();
