@@ -13,6 +13,7 @@ import Reporte from './components/Reporte';
 import RackSemanal from './components/RackSemanal';
 import Reserva from './components/Reserva';
 import TarifasUsuario from './components/TarifasUsuario';
+import CrearKart from './components/CrearKart';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
               <Route path="/rack-semanal" element={<RackSemanal/>} />
               <Route path="/reserva" element={<Reserva/>} />
               <Route path="/tarifas-cliente" element={<TarifasUsuario/>} />
+              <Route path="/nuevo-Kart" element={<CrearKart/>} />
             </Routes>
           </div>
       </Router>

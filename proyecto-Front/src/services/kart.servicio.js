@@ -15,7 +15,12 @@ const cambiarEstadoKart = (codigo, newEstado) => {
   });
 };
 
+const crearKart = (kart) => {
+  return httpClient.post(`${BASE_URL}/nuevoKart`, kart);
+};
+
 export default {
   obtenerKartsPorEstado,
   cambiarEstadoKart,
+  crearKart, 
 };

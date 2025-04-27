@@ -1,11 +1,15 @@
+// src/components/Karts.js
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Card, CardContent, Button, Grid, CircularProgress } from "@mui/material";
+import { Box, Typography, Card, CardContent, Button, Grid, CircularProgress, Stack } from "@mui/material";
+import { useNavigate } from "react-router-dom"; // importamos useNavigate
 import kartServicio from "../services/kart.servicio";
 
 const Karts = () => {
   const [disponibles, setDisponibles] = useState([]);
   const [mantenimiento, setMantenimiento] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate(); // hook para navegar
 
   const obtenerKarts = async () => {
     setLoading(true);
@@ -58,9 +62,18 @@ const Karts = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Gestión de Karts
-      </Typography>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+        <Typography variant="h4">
+          Gestión de Karts
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate("/nuevo-Kart")}
+        >
+          Crear Nuevo Kart
+        </Button>
+      </Stack>
 
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
@@ -68,20 +81,20 @@ const Karts = () => {
         </Box>
       ) : (
         <Box sx={{ display: "flex", justifyContent: "center" }}>
-        <Grid container spacing={4} sx={{ maxWidth: "1000px" }}>
-          <Grid item xs={12} md={6}>
-            <Typography variant="h5" gutterBottom>
-              Karts Disponibles
-            </Typography>
-            {renderKarts(disponibles)}
+          <Grid container spacing={4} sx={{ maxWidth: "1000px" }}>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h5" gutterBottom>
+                Karts Disponibles
+              </Typography>
+              {renderKarts(disponibles)}
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Typography variant="h5" gutterBottom>
+                Karts en Mantenimiento
+              </Typography>
+              {renderKarts(mantenimiento)}
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <Typography variant="h5" gutterBottom>
-              Karts en Mantenimiento
-            </Typography>
-            {renderKarts(mantenimiento)}
-          </Grid>
-        </Grid>
         </Box>
       )}
     </Box>

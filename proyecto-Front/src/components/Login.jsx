@@ -20,19 +20,14 @@ const Login = () => {
       .then((response) => {
         setLoading(false);
         if (response.data) {
-          // Comprobar el rol del usuario
           const rolUsuario = response.data.rol;
-
-          // Guardar la información del usuario (incluido el rol) en el localStorage
           localStorage.setItem("usuario", JSON.stringify(response.data));
-
-          // Redirigir según el rol del usuario
           if (rolUsuario === "administrador") {
-            navigate("/tarifas"); // Redirige a la página del administrador
+            navigate("/tarifas");
           } else if (rolUsuario === "cliente") {
-            navigate("/home"); // Redirige a la página de inicio para clientes
+            navigate("/home");
           } else {
-            setError("Rol de usuario no reconocido."); // Si el rol no es válido
+            setError("Rol de usuario no reconocido.");
           }
         }
       })
@@ -40,6 +35,10 @@ const Login = () => {
         setLoading(false);
         setError("Credenciales incorrectas.");
       });
+  };
+
+  const handleRegistro = () => {
+    navigate("/registro-usuario");
   };
 
   return (
@@ -71,8 +70,11 @@ const Login = () => {
         {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
 
         <Box sx={{ mt: 3, textAlign: "center" }}>
-          <Button variant="contained" color="primary" type="submit" disabled={loading}>
+          <Button variant="contained" color="primary" type="submit" disabled={loading} sx={{ mr: 2 }}>
             {loading ? <CircularProgress size={24} /> : "Iniciar Sesión"}
+          </Button>
+          <Button variant="outlined" color="secondary" onClick={handleRegistro}>
+            Registro
           </Button>
         </Box>
       </form>
