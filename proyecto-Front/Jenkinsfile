@@ -1,32 +1,31 @@
-pipeline{
+pipeline {
     agent any
-    tools{
-        gradle "gradle"
-
-    }
-    stages{
-        stage("Build JAR File"){
-            steps{
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/NicoM04/Tingeso']])
-                dir("demo"){
-                    bat "./gradlew clean build -x test"
+    stages {
+        stage("Build Frontend") {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], 
+                                userRemoteConfigs: [[url: 'https://github.com/thxmohamed/Tingeso']])
+                dir("frontend") {
+                    bat "npm install"
+                    bat "npm run build"
                 }
             }
         }
-        stage("Test"){
-            steps{
-                dir("demo"){
-                    bat "gradle test"
+        stage("Verify Docker") {
+            steps {
+                script {
+                    bat "docker ps"
                 }
             }
         }
-        stage("Build and Push Docker Image"){
-            steps{
-                dir("demo"){
-                    script{
-                         withDockerRegistry(credentialsId: 'docker-credentials') {
-                            bat "docker build -t nicom04/backend-container ."
-                            bat "docker push nicom04/backend-container"
+        stage("Build and Push Docker Image") {
+            steps {
+                dir("frontend") {
+                    script {
+                        withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                            bat 'docker login -u "%DOCKER_USERNAME%" -p "%DOCKER_PASSWORD%" https://index.docker.io/v1/'
+                            bat "docker build -t thxmohamed/frontend-container ."
+                            bat "docker push thxmohamed/frontend-container"
                         }
                     }
                 }
