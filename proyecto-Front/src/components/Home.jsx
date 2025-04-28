@@ -31,7 +31,7 @@ const Home = () => {
         <li><strong>Sábados, Domingos y Feriados:</strong> 10:00 a 22:00 horas</li>
       </ul>
 
-      <h2>Descuentos Disponibles</h2>
+      <h2>Los panchos son los mejores</h2>
 
       <h3>Por Número de Personas</h3>
       <table border="1" cellPadding="8" style={{ borderCollapse: "collapse", marginBottom: "20px" }}>
