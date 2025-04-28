@@ -55,7 +55,7 @@ export default function Navbar() {
           </IconButton>
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Sistema de Karting RM
+            Sistema de Karting RM.
           </Typography>
 
           {!usuario ? (
